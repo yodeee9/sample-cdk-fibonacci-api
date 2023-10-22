@@ -1,5 +1,4 @@
 import { Stack, StackProps, Duration, aws_apigateway, aws_lambda } from "aws-cdk-lib";
-import { Runtime, Tracing, DockerImageFunction, DockerImageCode } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
 
 // Lambdaハンドラのパラメータの型定義
@@ -24,12 +23,15 @@ const calculateFibonacciBunParams: RestApiParams = {
   method: "GET",
 };
 
+// 速度検証のための他ランタイムのLambda関数のパラメータ
+// 使用する場合は、以下のコメントアウトを外してください。
+/*
 // Node Lambdaのパラメータ
 const calculateFibonacciNodeParams: RestApiParams = {
   resource: "fibonacci-node",
   id: "Fibonacci-Node",
   entry: "lambda/node",
-  runtime: Runtime.NODEJS_18_X,
+  runtime: aws_lambda.Runtime.NODEJS_18_X,
   method: "GET",
 };
 
@@ -40,8 +42,9 @@ const calculateFibonacciDenoParams: RestApiParams = {
   entry: "lambda/deno",
   method: "GET",
 };
+*/
 
-// API GatewayのRestApiを作成
+// API Gateway RestApiを作成
 const createRestApi = (stack: CdkFibonacciApiStack): aws_apigateway.RestApi => {
   return new aws_apigateway.RestApi(stack, "LambdaRuntimePerformanceApi", {
     restApiName: "LambdaRuntimePerformanceApi",
@@ -58,11 +61,11 @@ const setupDockerLambdaWithIntegration = (
   restApi: aws_apigateway.RestApi,
   params: RestApiParams
 ): void => {
-  const lambdaFunction = new DockerImageFunction(stack, `${params.id}-function`, {
-    code: DockerImageCode.fromImageAsset(params.entry),
+  const lambdaFunction = new aws_lambda.DockerImageFunction(stack, `${params.id}-function`, {
+    code: aws_lambda.DockerImageCode.fromImageAsset(params.entry),
     timeout: Duration.seconds(30),
     memorySize: 128,
-    tracing: Tracing.ACTIVE,
+    tracing: aws_lambda.Tracing.ACTIVE,
   });
   attachResourceWithMethod(restApi, lambdaFunction, params);
 };
@@ -88,10 +91,14 @@ export class CdkFibonacciApiStack extends Stack {
     // Bun Lambda with Dockerの作成
     setupDockerLambdaWithIntegration(this, restApi, calculateFibonacciBunParams);
 
+    // 速度検証のための他ランタイムLambda関数
+    // 使用する場合は、以下のコメントを外してください。
+    /*
     // Node Lambdaの作成
     setupDockerLambdaWithIntegration(this, restApi, calculateFibonacciNodeParams);
 
     // Deno Lambda with Dockerの作成
     setupDockerLambdaWithIntegration(this, restApi, calculateFibonacciDenoParams);
+    */
   }
 }
