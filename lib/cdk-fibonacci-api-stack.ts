@@ -1,21 +1,17 @@
 import { Stack, StackProps, Duration, aws_apigateway, aws_lambda } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
-// Lambdaハンドラのパラメータの型定義
-type LambdaFunctionParams = {
+// Rest API パラメータの型定義
+type RestApiParams = {
   id: string;
   entry: string;
   runtime?: aws_lambda.Runtime;
-};
-
-// LambdaハンドラのとAPI Gatewayのパラメータの型定義
-type RestApiParams = LambdaFunctionParams & {
   resource: string;
   method: string;
   resourcePath?: string;
 };
 
-// Bun Lambda with Dockerのパラメータ
+// Bun LambdaのRestAPIパラメータ
 const calculateFibonacciBunParams: RestApiParams = {
   resource: "fibonacci-bun",
   id: "Fibonacci-Bun",
@@ -26,7 +22,7 @@ const calculateFibonacciBunParams: RestApiParams = {
 // 速度検証のための他ランタイムのLambda関数のパラメータ
 // 使用する場合は、以下のコメントアウトを外してください。
 /*
-// Node Lambdaのパラメータ
+// Node.js LambdaのRestAPIパラメータ
 const calculateFibonacciNodeParams: RestApiParams = {
   resource: "fibonacci-node",
   id: "Fibonacci-Node",
@@ -35,7 +31,7 @@ const calculateFibonacciNodeParams: RestApiParams = {
   method: "GET",
 };
 
-// Deno Lambda with Dockerのパラメータ
+// Deno LambdaのRestAPIパラメータ
 const calculateFibonacciDenoParams: RestApiParams = {
   resource: "fibonacci-deno",
   id: "Fibonacci-Deno",
@@ -88,16 +84,16 @@ export class CdkFibonacciApiStack extends Stack {
     // API Gateway RestAPIの作成
     const restApi = createRestApi(this);
 
-    // Bun Lambda with Dockerの作成
+    // Bun Lambdaの作成
     setupDockerLambdaWithIntegration(this, restApi, calculateFibonacciBunParams);
 
     // 速度検証のための他ランタイムLambda関数
     // 使用する場合は、以下のコメントを外してください。
     /*
-    // Node Lambdaの作成
+    // Node.js Lambdaの作成
     setupDockerLambdaWithIntegration(this, restApi, calculateFibonacciNodeParams);
 
-    // Deno Lambda with Dockerの作成
+    // Deno Lambdaの作成
     setupDockerLambdaWithIntegration(this, restApi, calculateFibonacciDenoParams);
     */
   }
