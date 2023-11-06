@@ -21,7 +21,7 @@ const calculateFibonacciBunParams: RestApiParams = {
 
 // 速度検証のための他ランタイムのLambda関数のパラメータ
 // 使用する場合は、以下のコメントアウトを外してください。
-/*
+// /*
 // Node.js LambdaのRestAPIパラメータ
 const calculateFibonacciNodeParams: RestApiParams = {
   resource: "fibonacci-node",
@@ -38,7 +38,7 @@ const calculateFibonacciDenoParams: RestApiParams = {
   entry: "lambda/deno",
   method: "GET",
 };
-*/
+// */
 
 // API Gateway RestApiを作成
 const createRestApi = (stack: CdkFibonacciApiStack): aws_apigateway.RestApi => {
@@ -89,12 +89,12 @@ export class CdkFibonacciApiStack extends Stack {
 
     // 速度検証のための他ランタイムLambda関数
     // 使用する場合は、以下のコメントを外してください。
-    /*
+    // /*
     // Node.js Lambdaの作成
     setupDockerLambdaWithIntegration(this, restApi, calculateFibonacciNodeParams);
 
     // Deno Lambdaの作成
     setupDockerLambdaWithIntegration(this, restApi, calculateFibonacciDenoParams);
-    */
+    // */
   }
 }
